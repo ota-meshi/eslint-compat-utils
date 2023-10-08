@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import type * as ESTree from "estree";
-import { getESLint, getSourceCode } from "../../src";
+import { getSourceCode } from "../../src";
 import { Linter } from "eslint";
 
 describe("getSourceCode", () => {
