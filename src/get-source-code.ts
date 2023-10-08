@@ -7,8 +7,8 @@ import { getParent } from "./lib/get-parent";
 type V6SourceCode = Pick<SourceCode, V6SourceCodeProps & keyof SourceCode>;
 
 /**
- * Get the SourceCode object from the given context.
- * The returned SourceCode is a SourceCode that is compatible with the new API whenever possible.
+ * Returns an extended instance of `context.sourceCode` or the result of `context.getSourceCode()`.
+ * Extended instances can use new APIs such as `getScope(node)` even with old ESLint.
  */
 export function getSourceCode(context: Rule.RuleContext): SourceCode {
   const original: V6SourceCode = context.sourceCode || context.getSourceCode();

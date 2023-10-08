@@ -3,8 +3,10 @@ import { getFilename } from "./get-filename";
 import { dirname, basename, extname } from "path";
 import { existsSync } from "fs";
 /**
- * When linting a file, it returns the full path of the file on disk without any code block information.
- * When linting text, it returns the value passed to —stdin-filename or <text> if not specified.
+ * Gets the value of `context.physicalFilename`,
+ * but for older ESLint it returns the result of `context.getPhysicalFilename()`.
+ * Versions older than v7.28.0 return a value guessed from the result of `context.getFilename()`,
+ * but it may be incorrect.
  */
 export function getPhysicalFilename(context: Rule.RuleContext): string {
   const physicalFilename =

@@ -1,6 +1,6 @@
 import type { Rule } from "eslint";
 /**
- * Returns the filename associated with the source.
+ * Gets the value of `context.filename`, but for older ESLint it returns the result of `context.getFilename()`.
  */
 export function getFilename(context: Rule.RuleContext): string {
   return context.filename ?? context.getFilename();
