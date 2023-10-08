@@ -24,6 +24,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
+                eslint: [6.0.0, 6, 7, 8]
                 node-version: [12, 14, 16, 18.x, 20.x]
         steps:
             - uses: actions/checkout@v4
@@ -33,19 +34,11 @@ jobs:
                   node-version: ${{ matrix.node-version }}
             - name: Install Packages
               run: npm i
+            - name: Install ESLint ${{ matrix.eslint }}
+              run: |+
+                npm i -D eslint@${{ matrix.eslint }}
+                rm -rf node_modules
+                npm i
+              if: matrix.eslint != 8
             - name: Test
               run: npm test
-    test-old-eslint:
-      runs-on: ubuntu-latest
-      strategy:
-          matrix:
-              eslint-version: [6, 7, 8]
-      steps:
-          - uses: actions/checkout@v4
-          - uses: actions/setup-node@v3
-            with:
-                node-version: 18
-          - name: Install Packages
-            run: npm i
-          - name: Test
-            run: npm test

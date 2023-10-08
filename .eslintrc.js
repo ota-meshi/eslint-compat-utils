@@ -1,8 +1,6 @@
-"use strict";
-
 module.exports = {
   parserOptions: {
-    sourceType: "script",
+    sourceType: "module",
     ecmaVersion: "latest",
   },
   extends: [
@@ -16,6 +14,7 @@ module.exports = {
   ],
   rules: {
     "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-explicit-any": "off",
   },
   overrides: [
     {
@@ -24,6 +23,12 @@ module.exports = {
       parserOptions: {
         sourceType: "module",
         project: "./tsconfig.json",
+      },
+    },
+    {
+      files: ["tools/**/*.ts"],
+      rules: {
+        "require-jsdoc": "off",
       },
     },
   ],
