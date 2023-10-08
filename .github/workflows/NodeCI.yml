@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install Packages
+        run: npm i
+      - name: Build
+        run: npm run build
+      - name: Lint
+        run: npm run lint
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - eslint: 8
+            node: 20
+          - eslint: 8
+            node: 18
+          - eslint: 8
+            node: 16
+          - eslint: 8
+            node: 14
+          - eslint: 8
+            node: 12
+          - eslint: 7
+            node: 18
+          - eslint: 6
+            node: 18
+          - eslint: 6.0.0
+            node: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install Packages
+        run: npm i
+      - name: Install ESLint ${{ matrix.eslint }}
+        run: |+
+          npm i -D eslint@${{ matrix.eslint }} -f
+          rm -rf node_modules
+          npm i -f
+        if: matrix.eslint != 8
+      - name: Test
+        run: npm test
