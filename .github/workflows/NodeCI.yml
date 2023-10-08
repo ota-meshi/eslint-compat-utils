@@ -51,9 +51,9 @@ jobs:
         run: npm i
       - name: Install ESLint ${{ matrix.eslint }}
         run: |+
-          npm i -D eslint@${{ matrix.eslint }}
+          npm i -D eslint@${{ matrix.eslint }} -f
           rm -rf node_modules
-          npm i
+          npm i -f
         if: matrix.eslint != 8
       - name: Test
         run: npm test
