@@ -4,14 +4,22 @@ import type { V6SourceCodeProps } from "./v6-props";
 import { applyPolyfills } from "./lib/apply-polyfills";
 import { getParent } from "./lib/get-parent";
 
-type V6SourceCode = Pick<SourceCode, V6SourceCodeProps & keyof SourceCode>;
+type MaybeV6SourceCode = Pick<SourceCode, V6SourceCodeProps & keyof SourceCode>;
+
+const cache = new WeakMap<MaybeV6SourceCode, SourceCode>();
 
 /**
  * Returns an extended instance of `context.sourceCode` or the result of `context.getSourceCode()`.
  * Extended instances can use new APIs such as `getScope(node)` even with old ESLint.
  */
 export function getSourceCode(context: Rule.RuleContext): SourceCode {
-  const original: V6SourceCode = context.sourceCode || context.getSourceCode();
+  const original: MaybeV6SourceCode =
+    context.sourceCode || context.getSourceCode();
+
+  const cached = cache.get(original);
+  if (cached) {
+    return cached;
+  }
 
   const sourceCode = applyPolyfills(original, {
     getScope(node: ESTree.Node) {
@@ -96,5 +104,6 @@ export function getSourceCode(context: Rule.RuleContext): SourceCode {
     },
   });
 
+  cache.set(original, sourceCode);
   return sourceCode;
 }
