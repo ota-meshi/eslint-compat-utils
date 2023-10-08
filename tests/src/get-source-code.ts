@@ -1,4 +1,4 @@
-import assert from "node:assert";
+import assert from "assert";
 import type * as ESTree from "estree";
 import { getSourceCode } from "../../src";
 import { Linter } from "eslint";
