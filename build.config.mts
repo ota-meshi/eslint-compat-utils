@@ -12,4 +12,7 @@ export default defineBuildConfig({
     },
   },
   failOnWarn: false,
+  rollup: {
+    esbuild: { target: "es2019" },
+  },
 });
