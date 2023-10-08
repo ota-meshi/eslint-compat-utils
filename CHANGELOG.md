@@ -1,5 +1,11 @@
 # eslint-compat-utils
 
+## 0.1.0
+
+### Minor Changes
+
+- feat: caching getSourceCode ([#7](https://github.com/ota-meshi/eslint-compat-utils/pull/7))
+
 ## 0.0.2
 
 ### Patch Changes
