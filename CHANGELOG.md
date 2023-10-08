@@ -1,5 +1,11 @@
 # eslint-compat-utils
 
+## 0.1.1
+
+### Patch Changes
+
+- feat: improve getESLint ([#9](https://github.com/ota-meshi/eslint-compat-utils/pull/9))
+
 ## 0.1.0
 
 ### Minor Changes
