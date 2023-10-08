@@ -30,7 +30,9 @@
     "test": "npm run mocha -- \"tests/src/**/*.ts\" --reporter dot --timeout 60000",
     "update:extract-v6-props": "npm run ts -- tools/extract-v6-props.ts",
     "ts": "node -r esbuild-register",
-    "mocha": "npm run ts -- ./node_modules/mocha/bin/mocha.js"
+    "mocha": "npm run ts -- ./node_modules/mocha/bin/mocha.js",
+    "prerelease": "npm run clean && npm run build",
+    "release": "changeset publish"
   },
   "repository": {
     "type": "git",
