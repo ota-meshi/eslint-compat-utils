@@ -1,7 +1,7 @@
 {
   "name": "eslint-compat-utils",
   "version": "0.0.0",
-  "description": "Provides an API that is compatible with the latest ESLint API even when using older ESLint.",
+  "description": "Provides an API for ESLint custom rules that is compatible with the latest ESLint even when using older ESLint.",
   "engines": {
     "node": ">=12"
   },
