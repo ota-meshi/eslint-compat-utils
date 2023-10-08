@@ -1,5 +1,11 @@
 # eslint-compat-utils
 
+## 0.1.2
+
+### Patch Changes
+
+- fix: build target to es2019 ([#11](https://github.com/ota-meshi/eslint-compat-utils/pull/11))
+
 ## 0.1.1
 
 ### Patch Changes
