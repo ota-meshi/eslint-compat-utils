@@ -64,4 +64,26 @@ describe("getSourceCode", () => {
       );
     });
   });
+  describe("markVariableAsUsed", () => {
+    it("The result of markVariableAsUsed should match your expectations.", () => {
+      const linter = new Linter();
+      linter.defineRule("test-rule", {
+        create(context) {
+          return {
+            "Identifier[name=me]"(node: ESTree.Identifier) {
+              getSourceCode(context).markVariableAsUsed(node.name, node);
+            },
+          };
+        },
+      });
+      const result = linter.verify("var me", {
+        rules: {
+          "test-rule": "error",
+          "no-unused-vars": "error",
+        },
+      });
+
+      assert.strictEqual(result.length, 0);
+    });
+  });
 });
