@@ -1,6 +1,7 @@
 import assert from "assert";
 import type * as ESTree from "estree";
 import { getSourceCode } from "../../src";
+import type { Scope } from "eslint";
 import { Linter } from "eslint";
 
 describe("getSourceCode", () => {
@@ -33,6 +34,33 @@ describe("getSourceCode", () => {
           "VariableDeclaration",
           "VariableDeclarator",
         ],
+      );
+    });
+  });
+  describe("getDeclaredVariables", () => {
+    it("The result of getDeclaredVariables should match your expectations.", () => {
+      const linter = new Linter();
+      let variables: Scope.Variable[] = [];
+      linter.defineRule("test-rule", {
+        create(context) {
+          return {
+            VariableDeclaration(node: ESTree.VariableDeclaration) {
+              variables = getSourceCode(context).getDeclaredVariables(node);
+            },
+          };
+        },
+      });
+      linter.verify("var {x,y} = {}", {
+        parserOptions: { ecmaVersion: 2015 },
+        rules: {
+          "test-rule": "error",
+        },
+      });
+
+      assert.strictEqual(variables.length, 2);
+      assert.deepStrictEqual(
+        variables.map((n) => n.name),
+        ["x", "y"],
       );
     });
   });
