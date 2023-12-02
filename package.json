@@ -59,7 +59,7 @@
     "@svitejs/changesets-changelog-github-compact": "^1.1.0",
     "@types/eslint": "^8.44.3",
     "@types/mocha": "^10.0.0",
-    "@types/node": "^18.11.0",
+    "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
     "esbuild-register": "^3.5.0",
