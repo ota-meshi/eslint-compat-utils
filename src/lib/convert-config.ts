@@ -6,7 +6,10 @@ import { createRequire } from "module";
 /** Convert to eslintrc config from v9 config  */
 export function convertConfigToRc(
   config: eslint.Linter.FlatConfig | eslint.Linter.FlatConfig[],
-  linter?: eslint.Linter,
+  linter?: {
+    defineRule?: (typeof eslint.Linter)["prototype"]["defineRule"];
+    defineParser?: (typeof eslint.Linter)["prototype"]["defineParser"];
+  },
 ): LinterConfigForV8 {
   if (Array.isArray(config)) {
     throw new Error("Array config is not supported.");
@@ -43,13 +46,13 @@ export function convertConfigToRc(
     if (parser && !(newConfig as LinterConfigForV8).parser) {
       const parserName = getParserName(parser);
       (newConfig as LinterConfigForV8).parser = parserName;
-      linter?.defineParser(parserName, parser);
+      linter?.defineParser?.(parserName, parser);
     }
   }
   if (plugins) {
     for (const [pluginName, plugin] of Object.entries(plugins)) {
       for (const [ruleName, rule] of Object.entries(plugin.rules || {})) {
-        linter?.defineRule(`${pluginName}/${ruleName}`, rule as any);
+        linter?.defineRule?.(`${pluginName}/${ruleName}`, rule as any);
       }
     }
   }

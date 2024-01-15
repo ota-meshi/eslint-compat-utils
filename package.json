@@ -21,6 +21,11 @@
       "import": "./dist/linter.mjs",
       "require": "./dist/linter.cjs"
     },
+    "./rule-tester": {
+      "types": "./dist/rule-tester.d.ts",
+      "import": "./dist/rule-tester.mjs",
+      "require": "./dist/rule-tester.cjs"
+    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
