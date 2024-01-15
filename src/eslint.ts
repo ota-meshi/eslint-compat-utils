@@ -2,14 +2,20 @@ import * as eslint from "eslint";
 import * as semver from "semver";
 import { convertConfigToRc } from "./lib/convert-config";
 
+let cacheESLint: typeof eslint.ESLint | undefined;
 /**
  * Get ESLint class
  */
 export function getESLint(): typeof eslint.ESLint {
-  if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
-    return eslint.ESLint;
+  if (cacheESLint) {
+    return cacheESLint;
   }
-  return eslint.ESLint ? getESLintClassForV8() : getESLintClassForV6();
+  if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
+    return (cacheESLint = eslint.ESLint);
+  }
+  return (cacheESLint = eslint.ESLint
+    ? getESLintClassForV8()
+    : getESLintClassForV6());
 }
 
 /** Create compat ESLint class for eslint v8  */
