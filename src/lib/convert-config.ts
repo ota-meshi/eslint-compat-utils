@@ -32,14 +32,15 @@ export function convertConfigToRc(
       ...(sourceType ? { sourceType } : { sourceType: "module" }),
       ...languageOptions,
       ...parserOptions,
+      ...(newConfig as LinterConfigForV8).parserOptions,
     };
     if (globals) {
       (newConfig as LinterConfigForV8).globals = {
-        ...(newConfig as LinterConfigForV8).globals,
         ...globals,
+        ...(newConfig as LinterConfigForV8).globals,
       };
     }
-    if (parser) {
+    if (parser && !(newConfig as LinterConfigForV8).parser) {
       const parserName = getParserName(parser);
       (newConfig as LinterConfigForV8).parser = parserName;
       linter?.defineParser(parserName, parser);
@@ -53,8 +54,8 @@ export function convertConfigToRc(
     }
   }
   (newConfig as LinterConfigForV8).env = {
-    ...(newConfig as LinterConfigForV8).env,
     es6: true,
+    ...(newConfig as LinterConfigForV8).env,
   };
   return newConfig as LinterConfigForV8;
 }
