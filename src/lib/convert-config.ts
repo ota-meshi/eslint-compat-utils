@@ -1,4 +1,5 @@
-import type * as eslint from "eslint";
+import * as eslint from "eslint";
+import * as semver from "semver";
 import type { LinterConfigForV8 } from "../v8-props";
 import { createRequire } from "module";
 
@@ -25,7 +26,9 @@ export function convertConfigToRc(
       ...languageOptions
     } = originalLanguageOptions;
     (newConfig as LinterConfigForV8).parserOptions = {
-      ...(ecmaVersion ? { ecmaVersion } : { ecmaVersion: "latest" }),
+      ...(!ecmaVersion || ecmaVersion === "latest"
+        ? { ecmaVersion: getLatestEcmaVersion() }
+        : { ecmaVersion }),
       ...(sourceType ? { sourceType } : { sourceType: "module" }),
       ...languageOptions,
       ...parserOptions,
@@ -85,4 +88,18 @@ function safeRequireResolve(name: string) {
   } catch {
     return name;
   }
+}
+
+/** Get latest ecmaVersion */
+function getLatestEcmaVersion() {
+  const eslintVersion = eslint.Linter.version;
+  return semver.gte(eslintVersion, "8.0.0")
+    ? "latest"
+    : semver.gte(eslintVersion, "7.8.0")
+      ? 2021
+      : semver.gte(eslintVersion, "6.2.0")
+        ? 2020
+        : semver.gte(eslintVersion, "5.0.0")
+          ? 2019
+          : 2018;
 }
