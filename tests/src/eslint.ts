@@ -29,6 +29,7 @@ describe("getESLint", () => {
             "no-undef": "error",
           },
           ...({
+            overrideConfigFile: true,
             languageOptions: {
               globals: { console: "readonly", foo: "readonly" },
             },

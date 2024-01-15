@@ -29,15 +29,18 @@ function getESLintClassForV8(
 
   /** Adjust options */
   function adjustOptions(options: any) {
-    const newOptions = {
-      ...options,
-      useEslintrc: false,
-    };
-    if (newOptions.baseConfig) {
-      newOptions.baseConfig = convertConfigToRc(newOptions.baseConfig);
+    const {
+      baseConfig,
+      overrideConfig: originalOverrideConfig,
+      overrideConfigFile,
+      ...newOptions
+    } = options || {};
+
+    if (baseConfig) {
+      newOptions.baseConfig = convertConfigToRc(baseConfig);
     }
-    if (newOptions.overrideConfig) {
-      const { plugins, ...overrideConfig } = newOptions.overrideConfig;
+    if (originalOverrideConfig) {
+      const { plugins, ...overrideConfig } = originalOverrideConfig;
       // Remove unsupported options
       delete overrideConfig.files;
       delete overrideConfig.processor;
@@ -47,6 +50,13 @@ function getESLintClassForV8(
       if (plugins) {
         newOptions.overrideConfig.plugins = Object.keys(plugins);
         newOptions.plugins = plugins;
+      }
+    }
+    if (overrideConfigFile) {
+      if (overrideConfigFile === true) {
+        newOptions.useEslintrc = false;
+      } else {
+        newOptions.overrideConfigFile = overrideConfigFile;
       }
     }
     return newOptions;
