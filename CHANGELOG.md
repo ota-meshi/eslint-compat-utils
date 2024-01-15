@@ -1,5 +1,15 @@
 # eslint-compat-utils
 
+## 0.2.0
+
+### Minor Changes
+
+- feat!: move `getESLint` to `./eslint` namespace ([#16](https://github.com/ota-meshi/eslint-compat-utils/pull/16))
+
+- feat: improve getESLint ([#16](https://github.com/ota-meshi/eslint-compat-utils/pull/16))
+
+- feat: add getLinter ([#16](https://github.com/ota-meshi/eslint-compat-utils/pull/16))
+
 ## 0.1.2
 
 ### Patch Changes
