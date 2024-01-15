@@ -1,15 +1,79 @@
 import * as eslint from "eslint";
+import * as semver from "semver";
+import { convertConfigToRc } from "./lib/convert-config";
 
+let cacheESLint: typeof eslint.ESLint | undefined;
 /**
  * Get ESLint class
  */
 export function getESLint(): typeof eslint.ESLint {
-  return eslint.ESLint ?? getESLintClassForV6();
+  return (cacheESLint ??= getESLintInternal());
+
+  /** Internal */
+  function getESLintInternal(): typeof eslint.ESLint {
+    if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
+      return (cacheESLint = eslint.ESLint);
+    }
+    return (cacheESLint = eslint.ESLint
+      ? getESLintClassForV8()
+      : getESLintClassForV6());
+  }
 }
 
-/** @returns {typeof eslint.ESLint} */
-function getESLintClassForV6() {
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- calss name
+/** Create compat ESLint class for eslint v8  */
+function getESLintClassForV8(
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- class name
+  BaseESLintClass = eslint.ESLint,
+): typeof eslint.ESLint {
+  return class ESLintForV8 extends BaseESLintClass {
+    public static get version() {
+      return BaseESLintClass.version;
+    }
+
+    public constructor(options: any) {
+      super(adjustOptions(options));
+    }
+  };
+
+  /** Adjust options */
+  function adjustOptions(options: any) {
+    const {
+      baseConfig,
+      overrideConfig: originalOverrideConfig,
+      overrideConfigFile,
+      ...newOptions
+    } = options || {};
+
+    if (baseConfig) {
+      newOptions.baseConfig = convertConfigToRc(baseConfig);
+    }
+    if (originalOverrideConfig) {
+      const { plugins, ...overrideConfig } = originalOverrideConfig;
+      // Remove unsupported options
+      delete overrideConfig.files;
+      delete overrideConfig.processor;
+
+      newOptions.overrideConfig = convertConfigToRc(overrideConfig);
+
+      if (plugins) {
+        newOptions.overrideConfig.plugins = Object.keys(plugins);
+        newOptions.plugins = plugins;
+      }
+    }
+    if (overrideConfigFile) {
+      if (overrideConfigFile === true) {
+        newOptions.useEslintrc = false;
+      } else {
+        newOptions.overrideConfigFile = overrideConfigFile;
+      }
+    }
+    return newOptions;
+  }
+}
+
+/** Create compat ESLint class for eslint v6  */
+function getESLintClassForV6(): typeof eslint.ESLint {
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- class name
   const CLIEngine = (eslint as any).CLIEngine;
   class ESLintForV6 {
     private readonly engine: any;
@@ -31,8 +95,7 @@ function getESLintClassForV6() {
         ...otherOptions
       } = options || {};
 
-      /** @type {eslint.CLIEngine.Options} */
-      const newOptions = {
+      const cliEngineOptions = {
         fix: Boolean(fix),
         reportUnusedDisableDirectives: reportUnusedDisableDirectives
           ? reportUnusedDisableDirectives !== "off"
@@ -52,7 +115,7 @@ function getESLintClassForV6() {
           : undefined,
         ...overrideConfig,
       };
-      this.engine = new CLIEngine(newOptions);
+      this.engine = new CLIEngine(cliEngineOptions);
 
       for (const [name, plugin] of Object.entries(pluginsMap || {})) {
         this.engine.addPlugin(name, plugin);
@@ -87,5 +150,5 @@ function getESLintClassForV6() {
     }
   }
 
-  return ESLintForV6;
+  return getESLintClassForV8(ESLintForV6 as any);
 }
