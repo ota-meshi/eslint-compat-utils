@@ -2,7 +2,8 @@ import * as eslint from "eslint";
 import * as semver from "semver";
 import { convertConfigToRc } from "./lib/convert-config";
 
-let cacheESLint: typeof eslint.ESLint | undefined;
+let cacheESLint: typeof eslint.ESLint | undefined,
+  cacheLegacyESLint: typeof eslint.ESLint | undefined;
 /**
  * Get ESLint class
  */
@@ -12,11 +13,36 @@ export function getESLint(): typeof eslint.ESLint {
   /** Internal */
   function getESLintInternal(): typeof eslint.ESLint {
     if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
-      return (cacheESLint = eslint.ESLint);
+      return eslint.ESLint;
     }
-    return (cacheESLint = eslint.ESLint
+    return eslint.ESLint
       ? getESLintClassForV8()
-      : getESLintClassForV6());
+      : getESLintClassForV8(getLegacyESLintClassFromCLIEngine());
+  }
+}
+/**
+ * Get LegacyESLint class
+ */
+export function getLegacyESLint(): typeof eslint.ESLint {
+  return (cacheLegacyESLint ??= getLegacyESLintInternal());
+
+  /** Internal */
+  function getLegacyESLintInternal(): typeof eslint.ESLint {
+    return (
+      getUnsupported().LegacyESLint ||
+      eslint.ESLint ||
+      getLegacyESLintClassFromCLIEngine()
+    );
+  }
+
+  /** Get "eslint/use-at-your-own-risk" */
+  function getUnsupported() {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports -- ignore
+      return require("eslint/use-at-your-own-risk");
+    } catch {
+      return {};
+    }
   }
 }
 
@@ -71,8 +97,8 @@ function getESLintClassForV8(
   }
 }
 
-/** Create compat ESLint class for eslint v6  */
-function getESLintClassForV6(): typeof eslint.ESLint {
+/** Create Legacy ESLint class from CLIEngine  */
+function getLegacyESLintClassFromCLIEngine(): typeof eslint.ESLint {
   // eslint-disable-next-line @typescript-eslint/naming-convention -- class name
   const CLIEngine = (eslint as any).CLIEngine;
   class ESLintForV6 {
@@ -150,5 +176,5 @@ function getESLintClassForV6(): typeof eslint.ESLint {
     }
   }
 
-  return getESLintClassForV8(ESLintForV6 as any);
+  return ESLintForV6 as any;
 }
