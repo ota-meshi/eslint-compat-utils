@@ -8,13 +8,15 @@ let cacheLinter: typeof eslint.Linter | undefined;
  * Get Linter class
  */
 export function getLinter(): typeof eslint.Linter {
-  if (cacheLinter) {
-    return cacheLinter;
+  return (cacheLinter ??= getLinterInternal());
+
+  /** Internal */
+  function getLinterInternal(): typeof eslint.Linter {
+    if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
+      return eslint.Linter;
+    }
+    return getLinterClassForV8();
   }
-  if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
-    return (cacheLinter = eslint.Linter);
-  }
-  return (cacheLinter = getLinterClassForV8());
 }
 
 /**  Get Linter class */

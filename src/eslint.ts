@@ -7,15 +7,17 @@ let cacheESLint: typeof eslint.ESLint | undefined;
  * Get ESLint class
  */
 export function getESLint(): typeof eslint.ESLint {
-  if (cacheESLint) {
-    return cacheESLint;
+  return (cacheESLint ??= getESLintInternal());
+
+  /** Internal */
+  function getESLintInternal(): typeof eslint.ESLint {
+    if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
+      return (cacheESLint = eslint.ESLint);
+    }
+    return (cacheESLint = eslint.ESLint
+      ? getESLintClassForV8()
+      : getESLintClassForV6());
   }
-  if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
-    return (cacheESLint = eslint.ESLint);
-  }
-  return (cacheESLint = eslint.ESLint
-    ? getESLintClassForV8()
-    : getESLintClassForV6());
 }
 
 /** Create compat ESLint class for eslint v8  */
