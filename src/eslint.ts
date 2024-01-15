@@ -142,5 +142,5 @@ function getESLintClassForV6(): typeof eslint.ESLint {
     }
   }
 
-  return ESLintForV6 as any;
+  return getESLintClassForV8(ESLintForV6 as any);
 }
