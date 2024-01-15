@@ -12,10 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with:
-          node-version: 18
       - name: Install Packages
-        run: npm i
+        run: npm i -f
       - name: Build
         run: npm run build
       - name: Lint
@@ -50,7 +48,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - name: Install Packages
-        run: npm i
+        run: npm i -f
       - name: Install ESLint ${{ matrix.eslint }}
         run: |+
           npm i -D eslint@${{ matrix.eslint }} -f
