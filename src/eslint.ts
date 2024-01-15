@@ -1,10 +1,56 @@
 import * as eslint from "eslint";
+import * as semver from "semver";
+import { convertConfigToRc } from "./lib/convert-config";
 
 /**
  * Get ESLint class
  */
 export function getESLint(): typeof eslint.ESLint {
-  return eslint.ESLint ?? getESLintClassForV6();
+  if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
+    return eslint.ESLint;
+  }
+  return eslint.ESLint ? getESLintClassForV8() : getESLintClassForV6();
+}
+
+/** Create compat ESLint class for eslint v8  */
+function getESLintClassForV8(
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- class name
+  BaseESLintClass = eslint.ESLint,
+): typeof eslint.ESLint {
+  return class ESLintForV8 extends BaseESLintClass {
+    public static get version() {
+      return BaseESLintClass.version;
+    }
+
+    public constructor(options: any) {
+      super(adjustOptions(options));
+    }
+  };
+
+  /** Adjust options */
+  function adjustOptions(options: any) {
+    const newOptions = {
+      ...options,
+      useEslintrc: false,
+    };
+    if (newOptions.baseConfig) {
+      newOptions.baseConfig = convertConfigToRc(newOptions.baseConfig);
+    }
+    if (newOptions.overrideConfig) {
+      const { plugins, ...overrideConfig } = newOptions.overrideConfig;
+      // Remove unsupported options
+      delete overrideConfig.files;
+      delete overrideConfig.processor;
+
+      newOptions.overrideConfig = convertConfigToRc(overrideConfig);
+
+      if (plugins) {
+        newOptions.overrideConfig.plugins = Object.keys(plugins);
+        newOptions.plugins = plugins;
+      }
+    }
+    return newOptions;
+  }
 }
 
 /** Create compat ESLint class for eslint v6  */
