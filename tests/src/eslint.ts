@@ -29,12 +29,12 @@ describe("getESLint", () => {
             "no-undef": "error",
           },
           ...({
-            overrideConfigFile: true,
             languageOptions: {
               globals: { console: "readonly", foo: "readonly" },
             },
           } as any),
         },
+        ...({ overrideConfigFile: true } as any),
       });
       const [result] = await eslint.lintText(
         "if (true) { var me = 1; } console.log(foo)",
