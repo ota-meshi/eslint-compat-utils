@@ -11,6 +11,11 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
+    "./eslint": {
+      "types": "./eslint.d.ts",
+      "import": "./dist/eslint.mjs",
+      "require": "./dist/eslint.cjs"
+    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
@@ -75,5 +80,8 @@
     "nyc": "^15.1.0",
     "prettier": "^3.0.3",
     "unbuild": "^2.0.0"
+  },
+  "dependencies": {
+    "semver": "^7.5.4"
   }
 }

@@ -7,9 +7,9 @@ export function getESLint(): typeof eslint.ESLint {
   return eslint.ESLint ?? getESLintClassForV6();
 }
 
-/** @returns {typeof eslint.ESLint} */
-function getESLintClassForV6() {
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- calss name
+/** Create compat ESLint class for eslint v6  */
+function getESLintClassForV6(): typeof eslint.ESLint {
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- class name
   const CLIEngine = (eslint as any).CLIEngine;
   class ESLintForV6 {
     private readonly engine: any;
@@ -31,8 +31,7 @@ function getESLintClassForV6() {
         ...otherOptions
       } = options || {};
 
-      /** @type {eslint.CLIEngine.Options} */
-      const newOptions = {
+      const cliEngineOptions = {
         fix: Boolean(fix),
         reportUnusedDisableDirectives: reportUnusedDisableDirectives
           ? reportUnusedDisableDirectives !== "off"
@@ -52,7 +51,7 @@ function getESLintClassForV6() {
           : undefined,
         ...overrideConfig,
       };
-      this.engine = new CLIEngine(newOptions);
+      this.engine = new CLIEngine(cliEngineOptions);
 
       for (const [name, plugin] of Object.entries(pluginsMap || {})) {
         this.engine.addPlugin(name, plugin);
@@ -87,5 +86,5 @@ function getESLintClassForV6() {
     }
   }
 
-  return ESLintForV6;
+  return ESLintForV6 as any;
 }
