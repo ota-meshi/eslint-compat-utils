@@ -16,9 +16,12 @@ export function getESLint(): typeof eslint.ESLint {
     if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
       return eslint.ESLint;
     }
-    return eslint.ESLint
-      ? getESLintClassForV8()
-      : getESLintClassForV8(getLegacyESLintClassFromCLIEngine());
+    return (
+      getUnsupported().FlatESLint ||
+      (eslint.ESLint
+        ? getESLintClassForV8()
+        : getESLintClassForV8(getLegacyESLintClassFromCLIEngine()))
+    );
   }
 }
 /**
