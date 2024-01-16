@@ -4,6 +4,7 @@ import { convertConfigToRc } from "./lib/convert-config";
 import { getUnsupported } from "./lib/get-unsupported";
 
 let cacheRuleTester: typeof eslint.RuleTester | undefined;
+let cachePrefix = "";
 
 /**
  * Get RuleTester class
@@ -14,13 +15,24 @@ export function getRuleTester(): typeof eslint.RuleTester {
   /** Internal */
   function getRuleTesterInternal(): typeof eslint.RuleTester {
     if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
+      cachePrefix = "rule-to-test/";
       return eslint.RuleTester;
     }
     const flatRuleTester = getUnsupported().FlatRuleTester;
-    return flatRuleTester
-      ? patchForV8FlatRuleTester(flatRuleTester)
-      : getRuleTesterClassFromLegacyRuleTester();
+    if (flatRuleTester) {
+      cachePrefix = "rule-to-test/";
+      return patchForV8FlatRuleTester(flatRuleTester);
+    }
+    return getRuleTesterClassFromLegacyRuleTester();
   }
+}
+
+/**
+ * Get the prefix of the ruleId used in the rule tester.
+ */
+export function getRuleIdPrefix(): string {
+  getRuleTester();
+  return cachePrefix;
 }
 
 /**
