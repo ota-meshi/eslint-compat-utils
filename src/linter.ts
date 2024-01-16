@@ -15,13 +15,13 @@ export function getLinter(): typeof eslint.Linter {
     if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
       return eslint.Linter;
     }
-    return getLinterClassForV8();
+    return getLinterClassFromLegacyLinter();
   }
 }
 
-/**  Get Linter class */
-function getLinterClassForV8(): typeof eslint.Linter {
-  return class LinterForV8 extends eslint.Linter {
+/** Create Linter class from legacy Linter class */
+function getLinterClassFromLegacyLinter(): typeof eslint.Linter {
+  return class LinterFromLegacyLinter extends eslint.Linter {
     public static get version() {
       return eslint.Linter.version;
     }

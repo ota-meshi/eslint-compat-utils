@@ -16,17 +16,18 @@ export function getRuleTester(): typeof eslint.RuleTester {
     if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
       return eslint.RuleTester;
     }
-    return getUnsupported().FlatRuleTester
-      ? patchForV8FlatRuleTester(getUnsupported().FlatRuleTester)
-      : getRuleTesterClassForV8();
+    const flatRuleTester = getUnsupported().FlatRuleTester;
+    return flatRuleTester
+      ? patchForV8FlatRuleTester(flatRuleTester)
+      : getRuleTesterClassFromLegacyRuleTester();
   }
 }
 
 /**
  * Apply patch to FlatRuleTester class
  */
-function patchForV8FlatRuleTester(baseRuleTester: typeof eslint.RuleTester) {
-  return class RuleTesterWithPatch extends baseRuleTester {
+function patchForV8FlatRuleTester(flatRuleTester: typeof eslint.RuleTester) {
+  return class RuleTesterWithPatch extends flatRuleTester {
     public constructor(options: any) {
       super(patchConfig(options));
     }
@@ -42,9 +43,9 @@ function patchForV8FlatRuleTester(baseRuleTester: typeof eslint.RuleTester) {
 }
 
 /**
- * Get RuleTester class
+ * Create RuleTester class from legacy RuleTester class
  */
-function getRuleTesterClassForV8() {
+function getRuleTesterClassFromLegacyRuleTester() {
   return class RuleTesterForV8 extends eslint.RuleTester {
     public constructor(options: any) {
       const defineRules: [string, eslint.Rule.RuleModule][] = [];
