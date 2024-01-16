@@ -1,6 +1,7 @@
 import * as eslint from "eslint";
 import * as semver from "semver";
 import { convertConfigToRc } from "./lib/convert-config";
+import { getUnsupported } from "./lib/get-unsupported";
 
 let cacheESLint: typeof eslint.ESLint | undefined,
   cacheLegacyESLint: typeof eslint.ESLint | undefined;
@@ -15,9 +16,12 @@ export function getESLint(): typeof eslint.ESLint {
     if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
       return eslint.ESLint;
     }
-    return eslint.ESLint
-      ? getESLintClassForV8()
-      : getESLintClassForV8(getLegacyESLintClassFromCLIEngine());
+    return (
+      getUnsupported().FlatESLint ||
+      (eslint.ESLint
+        ? getESLintClassFromLegacyESLint(eslint.ESLint)
+        : getESLintClassFromLegacyESLint(getLegacyESLintClassFromCLIEngine()))
+    );
   }
 }
 /**
@@ -34,26 +38,15 @@ export function getLegacyESLint(): typeof eslint.ESLint {
       getLegacyESLintClassFromCLIEngine()
     );
   }
-
-  /** Get "eslint/use-at-your-own-risk" */
-  function getUnsupported() {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports -- ignore
-      return require("eslint/use-at-your-own-risk");
-    } catch {
-      return {};
-    }
-  }
 }
 
-/** Create compat ESLint class for eslint v8  */
-function getESLintClassForV8(
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- class name
-  BaseESLintClass = eslint.ESLint,
+/** Create compat ESLint class from legacy ESLint class */
+function getESLintClassFromLegacyESLint(
+  legacyESLintClass: typeof eslint.ESLint,
 ): typeof eslint.ESLint {
-  return class ESLintForV8 extends BaseESLintClass {
+  return class ESLintFromLegacyESLint extends legacyESLintClass {
     public static get version() {
-      return BaseESLintClass.version;
+      return legacyESLintClass.version;
     }
 
     public constructor(options: any) {
@@ -101,7 +94,7 @@ function getESLintClassForV8(
 function getLegacyESLintClassFromCLIEngine(): typeof eslint.ESLint {
   // eslint-disable-next-line @typescript-eslint/naming-convention -- class name
   const CLIEngine = (eslint as any).CLIEngine;
-  class ESLintForV6 {
+  class LegacyESLintFromCLIEngine {
     private readonly engine: any;
 
     public static get version(): string {
@@ -176,5 +169,5 @@ function getLegacyESLintClassFromCLIEngine(): typeof eslint.ESLint {
     }
   }
 
-  return ESLintForV6 as any;
+  return LegacyESLintFromCLIEngine as any;
 }
