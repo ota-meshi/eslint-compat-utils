@@ -1,5 +1,11 @@
 # eslint-compat-utils
 
+## 0.4.0
+
+### Minor Changes
+
+- feat: improve getLinter/getRuleTester ([#30](https://github.com/ota-meshi/eslint-compat-utils/pull/30))
+
 ## 0.3.3
 
 ### Patch Changes
