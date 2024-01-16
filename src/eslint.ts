@@ -70,7 +70,9 @@ function getESLintClassFromLegacyESLint(
       const { plugins, ...overrideConfig } = originalOverrideConfig;
       // Remove unsupported options
       delete overrideConfig.files;
-      delete overrideConfig.processor;
+      if (typeof overrideConfig.processor !== "string")
+        // Remove unsupported options
+        delete overrideConfig.processor;
 
       newOptions.overrideConfig = convertConfigToRc(overrideConfig);
 

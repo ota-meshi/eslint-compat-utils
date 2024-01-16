@@ -2,6 +2,7 @@ import * as eslint from "eslint";
 import * as semver from "semver";
 import { convertConfigToRc } from "./lib/convert-config";
 import { getUnsupported } from "./lib/get-unsupported";
+import { convertOptionToLegacy } from "./lib/convert-option";
 
 let cacheRuleTester: typeof eslint.RuleTester | undefined;
 let cachePrefix = "";
@@ -110,10 +111,7 @@ function getRuleTesterClassFromLegacyRuleTester() {
     }
     return {
       ...converted,
-      filename: {
-        ...(config.filename != null ? { filename: config.filename } : {}),
-        ...processor,
-      },
+      filename: convertOptionToLegacy(processor, config.filename, config),
     };
   }
 }
