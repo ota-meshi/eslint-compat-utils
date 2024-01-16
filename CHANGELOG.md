@@ -1,5 +1,11 @@
 # eslint-compat-utils
 
+## 0.3.3
+
+### Patch Changes
+
+- fix: getRuleTester ([#28](https://github.com/ota-meshi/eslint-compat-utils/pull/28))
+
 ## 0.3.2
 
 ### Patch Changes
