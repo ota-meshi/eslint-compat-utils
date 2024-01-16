@@ -59,6 +59,8 @@ function patchForV8FlatRuleTester(flatRuleTester: typeof eslint.RuleTester) {
  */
 function getRuleTesterClassFromLegacyRuleTester() {
   return class RuleTesterForV8 extends eslint.RuleTester {
+    private readonly defaultProcessor: any;
+
     public constructor(options: any) {
       const defineRules: [string, eslint.Rule.RuleModule][] = [];
       super(
@@ -72,6 +74,7 @@ function getRuleTesterClassFromLegacyRuleTester() {
         // @ts-expect-error -- linter property
         this.linter?.defineRule(...args);
       }
+      this.defaultProcessor = options.processor;
     }
 
     public run(
@@ -84,12 +87,31 @@ function getRuleTesterClassFromLegacyRuleTester() {
     ) {
       super.run(name, rule, {
         valid: (tests.valid || []).map((test) =>
-          typeof test === "string" ? test : (convertConfigToRc(test) as any),
+          typeof test === "string"
+            ? test
+            : convert(test, this.defaultProcessor),
         ),
-        invalid: (tests.invalid || []).map(
-          (test) => convertConfigToRc(test) as any,
+        invalid: (tests.invalid || []).map((test) =>
+          convert(test, this.defaultProcessor),
         ),
       });
     }
   };
+
+  /** Convert config to rc */
+  function convert(config: any, defaultProcessor: any): any {
+    const processor = config.processor || defaultProcessor;
+    const converted = convertConfigToRc(config);
+
+    if (!processor) {
+      return converted;
+    }
+    return {
+      ...converted,
+      filename: {
+        ...(config.filename != null ? { filename: config.filename } : {}),
+        ...processor,
+      },
+    };
+  }
 }
