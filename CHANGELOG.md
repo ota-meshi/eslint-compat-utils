@@ -1,5 +1,11 @@
 # eslint-compat-utils
 
+## 0.3.1
+
+### Patch Changes
+
+- fix: add getRuleIdPrefix ([#22](https://github.com/ota-meshi/eslint-compat-utils/pull/22))
+
 ## 0.3.0
 
 ### Minor Changes
