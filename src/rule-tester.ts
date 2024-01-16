@@ -63,9 +63,8 @@ function getRuleTesterClassFromLegacyRuleTester() {
 
     public constructor(options: any) {
       const defineRules: [string, eslint.Rule.RuleModule][] = [];
-      const { processor, ...others } = options;
       super(
-        convertConfigToRc(others, {
+        convertConfigToRc(options, {
           defineRule(...args) {
             defineRules.push(args);
           },
@@ -75,7 +74,7 @@ function getRuleTesterClassFromLegacyRuleTester() {
         // @ts-expect-error -- linter property
         this.linter?.defineRule(...args);
       }
-      this.defaultProcessor = processor;
+      this.defaultProcessor = options.processor;
     }
 
     public run(
@@ -101,9 +100,8 @@ function getRuleTesterClassFromLegacyRuleTester() {
 
   /** Convert config to rc */
   function convert(config: any, defaultProcessor: any): any {
-    const { processor: configProcessor, ...otherConfig } = config;
-    const processor = configProcessor || defaultProcessor;
-    const converted = convertConfigToRc(otherConfig);
+    const processor = config.processor || defaultProcessor;
+    const converted = convertConfigToRc(config);
 
     if (!processor) {
       return converted;
