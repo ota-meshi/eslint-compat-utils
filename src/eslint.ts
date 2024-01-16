@@ -57,27 +57,23 @@ function getESLintClassFromLegacyESLint(
   /** Adjust options */
   function adjustOptions(options: any) {
     const {
-      baseConfig,
+      baseConfig: originalBaseConfig,
       overrideConfig: originalOverrideConfig,
       overrideConfigFile,
       ...newOptions
     } = options || {};
 
-    if (baseConfig) {
-      newOptions.baseConfig = convertConfigToRc(baseConfig);
+    if (originalBaseConfig) {
+      const [baseConfig, plugins] = convertConfig(originalBaseConfig);
+      newOptions.baseConfig = baseConfig;
+      if (plugins) {
+        newOptions.plugins = plugins;
+      }
     }
     if (originalOverrideConfig) {
-      const { plugins, ...overrideConfig } = originalOverrideConfig;
-      // Remove unsupported options
-      delete overrideConfig.files;
-      if (typeof overrideConfig.processor !== "string")
-        // Remove unsupported options
-        delete overrideConfig.processor;
-
-      newOptions.overrideConfig = convertConfigToRc(overrideConfig);
-
+      const [overrideConfig, plugins] = convertConfig(originalOverrideConfig);
+      newOptions.overrideConfig = overrideConfig;
       if (plugins) {
-        newOptions.overrideConfig.plugins = Object.keys(plugins);
         newOptions.plugins = plugins;
       }
     }
@@ -89,6 +85,24 @@ function getESLintClassFromLegacyESLint(
       }
     }
     return newOptions;
+  }
+
+  /** Convert */
+  function convertConfig(config: any) {
+    const { plugins, ...otherConfig } = config;
+    // Remove unsupported options
+    delete otherConfig.files;
+    if (typeof otherConfig.processor !== "string")
+      // Remove unsupported options
+      delete otherConfig.processor;
+
+    const newConfig = convertConfigToRc(otherConfig);
+
+    if (plugins) {
+      newConfig.plugins = Object.keys(plugins);
+    }
+
+    return [newConfig, plugins];
   }
 }
 
