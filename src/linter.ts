@@ -1,6 +1,7 @@
 import * as eslint from "eslint";
 import * as semver from "semver";
 import { convertConfigToRc } from "./lib/convert-config";
+import { convertOptionToLegacy } from "./lib/convert-option";
 
 let cacheLinter: typeof eslint.Linter | undefined;
 
@@ -31,8 +32,10 @@ function getLinterClassFromLegacyLinter(): typeof eslint.Linter {
       config: any,
       option: any,
     ): eslint.Linter.LintMessage[] {
-      const newConfig = convertConfigToRc(config, this);
-      return super.verify(code, newConfig as any, option);
+      const { processor, ...otherConfig } = config || {};
+      const newConfig = convertConfigToRc(otherConfig, this);
+      const newOption = convertOptionToLegacy(processor, option, config || {});
+      return super.verify(code, newConfig as any, newOption as any);
     }
   };
 }

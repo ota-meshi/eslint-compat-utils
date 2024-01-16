@@ -1,7 +1,7 @@
 import * as eslint from "eslint";
 import * as semver from "semver";
 import type { LinterConfigForV8 } from "../v8-props";
-import { createRequire } from "module";
+import { safeRequire, safeRequireResolve } from "./require";
 
 /** Convert to eslintrc config from v9 config  */
 export function convertConfigToRc(
@@ -74,24 +74,6 @@ function getParserName(parser: any) {
   )
     return safeRequireResolve("@typescript-eslint/parser");
   return safeRequireResolve(name);
-}
-
-/** Get module */
-function safeRequire(name: string) {
-  try {
-    return createRequire(`${process.cwd()}/__placeholder__.js`)(name);
-  } catch {
-    return undefined;
-  }
-}
-
-/** Get module path */
-function safeRequireResolve(name: string) {
-  try {
-    return createRequire(`${process.cwd()}/__placeholder__.js`).resolve(name);
-  } catch {
-    return name;
-  }
 }
 
 /** Get latest ecmaVersion */
