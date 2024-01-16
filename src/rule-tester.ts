@@ -1,6 +1,7 @@
 import * as eslint from "eslint";
 import * as semver from "semver";
 import { convertConfigToRc } from "./lib/convert-config";
+import { getUnsupported } from "./lib/get-unsupported";
 
 let cacheRuleTester: typeof eslint.RuleTester | undefined;
 
@@ -15,7 +16,28 @@ export function getRuleTester(): typeof eslint.RuleTester {
     if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
       return eslint.RuleTester;
     }
-    return getRuleTesterClassForV8();
+    return getUnsupported().FlatRuleTester
+      ? patchForV8FlatRuleTester(getUnsupported().FlatRuleTester)
+      : getRuleTesterClassForV8();
+  }
+}
+
+/**
+ * Apply patch to FlatRuleTester class
+ */
+function patchForV8FlatRuleTester(baseRuleTester: typeof eslint.RuleTester) {
+  return class RuleTesterWithPatch extends baseRuleTester {
+    public constructor(options: any) {
+      super(patchConfig(options));
+    }
+  };
+
+  /** Apply patch to config */
+  function patchConfig(config: any) {
+    return {
+      files: ["**/*.*"],
+      ...config,
+    };
   }
 }
 

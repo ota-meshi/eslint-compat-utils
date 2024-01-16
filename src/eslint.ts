@@ -1,6 +1,7 @@
 import * as eslint from "eslint";
 import * as semver from "semver";
 import { convertConfigToRc } from "./lib/convert-config";
+import { getUnsupported } from "./lib/get-unsupported";
 
 let cacheESLint: typeof eslint.ESLint | undefined,
   cacheLegacyESLint: typeof eslint.ESLint | undefined;
@@ -33,16 +34,6 @@ export function getLegacyESLint(): typeof eslint.ESLint {
       eslint.ESLint ||
       getLegacyESLintClassFromCLIEngine()
     );
-  }
-
-  /** Get "eslint/use-at-your-own-risk" */
-  function getUnsupported() {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports -- ignore
-      return require("eslint/use-at-your-own-risk");
-    } catch {
-      return {};
-    }
   }
 }
 
