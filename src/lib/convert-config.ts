@@ -46,7 +46,7 @@ export function convertConfigToRc(
     if (parser && !(newConfig as LinterConfigForV8).parser) {
       const parserName = getParserName(parser);
       (newConfig as LinterConfigForV8).parser = parserName;
-      linter?.defineParser?.(parserName, parser);
+      linter?.defineParser?.(parserName, parser as any);
     }
   }
   if (plugins) {

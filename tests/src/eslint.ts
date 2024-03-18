@@ -50,5 +50,52 @@ describe("getESLint", () => {
         ],
       );
     });
+
+    it("The result of lintText should match expectations with Array overrideConfig.", async () => {
+      const eslint = new ESLint({
+        overrideConfig: [
+          {
+            plugins: {
+              test: {
+                rules: {
+                  test: {
+                    create(context: Rule.RuleContext) {
+                      return {
+                        IfStatement(node: ESTree.IfStatement) {
+                          context.report({ node, message: "Foo" });
+                        },
+                      };
+                    },
+                  },
+                },
+              },
+            } as any,
+            rules: {
+              "test/test": "error",
+              "no-undef": "error",
+            },
+            ...({
+              languageOptions: {
+                globals: { console: "readonly", foo: "readonly" },
+              },
+            } as any),
+          },
+        ],
+        ...({ overrideConfigFile: true } as any),
+      });
+      const [result] = await eslint.lintText(
+        "if (true) { var me = 1; } console.log(foo)",
+      );
+
+      assert.deepStrictEqual(
+        result.messages.map((m) => ({ message: m.message, ruleId: m.ruleId })),
+        [
+          {
+            message: "Foo",
+            ruleId: "test/test",
+          },
+        ],
+      );
+    });
   });
 });
