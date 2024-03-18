@@ -103,7 +103,7 @@ function getESLintClassFromLegacyESLint(
         delete otherConfig.processor;
 
       const newConfig: OverrideConfig = {
-        files: ["**/*.*", "*.*"],
+        files: ["**/*.*", "*.*", "**/*", "*"],
         ...convertConfigToRc(otherConfig),
       };
 
