@@ -1,5 +1,11 @@
 # eslint-compat-utils
 
+## 0.5.0
+
+### Minor Changes
+
+- fix: support for array overrideConfig ([#37](https://github.com/ota-meshi/eslint-compat-utils/pull/37))
+
 ## 0.4.1
 
 ### Patch Changes
