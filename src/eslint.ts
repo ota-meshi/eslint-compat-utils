@@ -2,6 +2,9 @@ import * as eslint from "eslint";
 import * as semver from "semver";
 import { convertConfigToRc } from "./lib/convert-config";
 import { getUnsupported } from "./lib/get-unsupported";
+import type { LinterConfigForV8 } from "./v8-props";
+
+type OverrideConfig = NonNullable<LinterConfigForV8["overrides"]>[number];
 
 let cacheESLint: typeof eslint.ESLint | undefined,
   cacheLegacyESLint: typeof eslint.ESLint | undefined;
@@ -89,20 +92,29 @@ function getESLintClassFromLegacyESLint(
 
   /** Convert */
   function convertConfig(config: any) {
-    const { plugins, ...otherConfig } = config;
-    // Remove unsupported options
-    delete otherConfig.files;
-    if (typeof otherConfig.processor !== "string")
+    const pluginDefs = {};
+    const newConfigs = [];
+    for (const configItem of Array.isArray(config) ? config : [config]) {
+      const { plugins, ...otherConfig } = configItem;
       // Remove unsupported options
-      delete otherConfig.processor;
+      // delete otherConfig.files;
+      if (typeof otherConfig.processor !== "string")
+        // Remove unsupported options
+        delete otherConfig.processor;
 
-    const newConfig = convertConfigToRc(otherConfig);
+      const newConfig: OverrideConfig = {
+        files: ["**/*.*", "*.*"],
+        ...convertConfigToRc(otherConfig),
+      };
 
-    if (plugins) {
-      newConfig.plugins = Object.keys(plugins);
+      if (plugins) {
+        newConfig.plugins = Object.keys(plugins);
+      }
+      Object.assign(pluginDefs, plugins);
+      newConfigs.push(newConfig);
     }
 
-    return [newConfig, plugins];
+    return [{ overrides: newConfigs }, pluginDefs];
   }
 }
 
