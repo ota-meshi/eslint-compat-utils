@@ -131,10 +131,17 @@ function getLegacyESLintClassFromCLIEngine(): typeof eslint.ESLint {
 
     public constructor(options: eslint.ESLint.Options) {
       const {
-        overrideConfig: { plugins, globals, rules, ...overrideConfig } = {
+        overrideConfig: {
+          plugins,
+          globals,
+          rules,
+          overrides,
+          ...overrideConfig
+        } = {
           plugins: [],
           globals: {},
           rules: {},
+          overrides: [],
         },
         fix,
         reportUnusedDisableDirectives,
@@ -143,12 +150,18 @@ function getLegacyESLintClassFromCLIEngine(): typeof eslint.ESLint {
       } = options || {};
 
       const cliEngineOptions = {
+        baseConfig: {
+          ...(overrides
+            ? {
+                overrides,
+              }
+            : {}),
+        },
         fix: Boolean(fix),
         reportUnusedDisableDirectives: reportUnusedDisableDirectives
           ? reportUnusedDisableDirectives !== "off"
           : undefined,
         ...otherOptions,
-
         globals: globals
           ? Object.keys(globals).filter((n) => globals[n])
           : undefined,
