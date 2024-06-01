@@ -1,5 +1,11 @@
 # eslint-compat-utils
 
+## 0.5.1
+
+### Patch Changes
+
+- fix: resolve globals ([#44](https://github.com/ota-meshi/eslint-compat-utils/pull/44))
+
 ## 0.5.0
 
 ### Minor Changes
