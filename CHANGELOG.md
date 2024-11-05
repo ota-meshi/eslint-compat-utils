@@ -1,5 +1,11 @@
 # eslint-compat-utils
 
+## 0.6.0
+
+### Minor Changes
+
+- feat: support private class fields on source code ([#51](https://github.com/ota-meshi/eslint-compat-utils/pull/51))
+
 ## 0.5.1
 
 ### Patch Changes
