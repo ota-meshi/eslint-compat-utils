@@ -129,7 +129,7 @@ function getLegacyESLintClassFromCLIEngine(): typeof eslint.ESLint {
       return CLIEngine.version;
     }
 
-    public constructor(options: eslint.ESLint.Options) {
+    public constructor(options: eslint.ESLint.LegacyOptions) {
       const {
         overrideConfig: {
           plugins,

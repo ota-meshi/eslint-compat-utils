@@ -23,7 +23,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - eslint: ^9.0.0-0
+          - eslint: 9
+            node: 22
+          - eslint: 9
             node: 20
           - eslint: 8
             node: 20
@@ -54,6 +56,6 @@ jobs:
           npm i -D eslint@${{ matrix.eslint }} -f
           rm -rf node_modules
           npm i -f
-        if: matrix.eslint != 8
+        if: matrix.eslint != 9
       - name: Test
         run: npm test
