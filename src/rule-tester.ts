@@ -70,7 +70,7 @@ function getRuleTesterClassFromLegacyRuleTester() {
           defineRule(...args) {
             defineRules.push(args);
           },
-        }),
+        }) as never,
       );
       for (const args of defineRules) {
         // @ts-expect-error -- linter property
