@@ -1,5 +1,11 @@
 # eslint-compat-utils
 
+## 0.6.3
+
+### Patch Changes
+
+- fix(rule-tester): setDefaultConfig (take2) ([#58](https://github.com/ota-meshi/eslint-compat-utils/pull/58))
+
 ## 0.6.2
 
 ### Patch Changes
