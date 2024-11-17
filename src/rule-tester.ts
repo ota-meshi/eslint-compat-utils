@@ -79,6 +79,11 @@ function getRuleTesterClassFromLegacyRuleTester() {
       this.defaultProcessor = processor;
     }
 
+    public setDefaultConfig(config: eslint.Linter.Config) {
+      // @ts-expect-error -- setDefaultConfig?
+      super.setDefaultConfig(convertConfigToRc(config));
+    }
+
     public run(
       name: string,
       rule: eslint.Rule.RuleModule,
