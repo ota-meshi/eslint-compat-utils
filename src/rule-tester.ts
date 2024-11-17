@@ -60,6 +60,11 @@ function patchForV8FlatRuleTester(flatRuleTester: typeof eslint.RuleTester) {
  */
 function getRuleTesterClassFromLegacyRuleTester() {
   return class RuleTesterForV8 extends eslint.RuleTester {
+    public static setDefaultConfig(config: eslint.Linter.Config) {
+      // @ts-expect-error -- setDefaultConfig?
+      eslint.RuleTester.setDefaultConfig(convertConfigToRc(config));
+    }
+
     private readonly defaultProcessor: any;
 
     public constructor(options: any = {}) {
@@ -77,11 +82,6 @@ function getRuleTesterClassFromLegacyRuleTester() {
         this.linter?.defineRule(...args);
       }
       this.defaultProcessor = processor;
-    }
-
-    public setDefaultConfig(config: eslint.Linter.Config) {
-      // @ts-expect-error -- setDefaultConfig?
-      super.setDefaultConfig(convertConfigToRc(config));
     }
 
     public run(
