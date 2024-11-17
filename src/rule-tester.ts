@@ -62,7 +62,7 @@ function getRuleTesterClassFromLegacyRuleTester() {
   return class RuleTesterForV8 extends eslint.RuleTester {
     private readonly defaultProcessor: any;
 
-    public constructor(options: any) {
+    public constructor(options: any = {}) {
       const defineRules: [string, eslint.Rule.RuleModule][] = [];
       const { processor, ...others } = options;
       super(
