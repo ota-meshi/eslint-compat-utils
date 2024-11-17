@@ -1,5 +1,11 @@
 # eslint-compat-utils
 
+## 0.6.1
+
+### Patch Changes
+
+- fix(rule-tester): cannot destructure property error with eslint v8 ([#54](https://github.com/ota-meshi/eslint-compat-utils/pull/54))
+
 ## 0.6.0
 
 ### Minor Changes
