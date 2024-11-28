@@ -1,5 +1,11 @@
 # eslint-compat-utils
 
+## 0.6.4
+
+### Patch Changes
+
+- fix: wrong shim for esm ([#60](https://github.com/ota-meshi/eslint-compat-utils/pull/60))
+
 ## 0.6.3
 
 ### Patch Changes
