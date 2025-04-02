@@ -1,5 +1,11 @@
 # eslint-compat-utils
 
+## 0.6.5
+
+### Patch Changes
+
+- fix: incorrect `LegacyESLint` type ([#65](https://github.com/ota-meshi/eslint-compat-utils/pull/65))
+
 ## 0.6.4
 
 ### Patch Changes
