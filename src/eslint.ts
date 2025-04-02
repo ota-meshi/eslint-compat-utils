@@ -1,28 +1,43 @@
 import * as eslint from "eslint";
 import * as semver from "semver";
+import type * as eslintUnsupportedApi from "eslint/use-at-your-own-risk";
 import { convertConfigToRc } from "./lib/convert-config";
 import { getUnsupported } from "./lib/get-unsupported";
 import type { LinterConfigForV8 } from "./v8-props";
 
+type IfAny<T, Y, N> = 0 extends 1 & T ? Y : N;
+
+type ESLintType = typeof eslint.ESLint;
+
+type LegacyESLintType = typeof eslintUnsupportedApi.LegacyESLint;
+
+export type LegacyESLint = IfAny<
+  LegacyESLintType,
+  ESLintType,
+  LegacyESLintType
+>;
+
 type OverrideConfig = NonNullable<LinterConfigForV8["overrides"]>[number];
 
-let cacheESLint: typeof eslint.ESLint | undefined,
-  cacheLegacyESLint: typeof eslint.ESLint | undefined;
+let cacheESLint: ESLintType | undefined,
+  cacheLegacyESLint: LegacyESLint | undefined;
 /**
  * Get ESLint class
  */
-export function getESLint(): typeof eslint.ESLint {
+export function getESLint(): ESLintType {
   return (cacheESLint ??= getESLintInternal());
 
   /** Internal */
-  function getESLintInternal(): typeof eslint.ESLint {
+  function getESLintInternal(): ESLintType {
     if (semver.gte(eslint.Linter.version, "9.0.0-0")) {
       return eslint.ESLint;
     }
     return (
       getUnsupported().FlatESLint ||
       (eslint.ESLint
-        ? getESLintClassFromLegacyESLint(eslint.ESLint)
+        ? getESLintClassFromLegacyESLint(
+            eslint.ESLint as unknown as LegacyESLint,
+          )
         : getESLintClassFromLegacyESLint(getLegacyESLintClassFromCLIEngine()))
     );
   }
@@ -30,11 +45,11 @@ export function getESLint(): typeof eslint.ESLint {
 /**
  * Get LegacyESLint class
  */
-export function getLegacyESLint(): typeof eslint.ESLint {
+export function getLegacyESLint(): LegacyESLint {
   return (cacheLegacyESLint ??= getLegacyESLintInternal());
 
   /** Internal */
-  function getLegacyESLintInternal(): typeof eslint.ESLint {
+  function getLegacyESLintInternal(): LegacyESLint {
     return (
       getUnsupported().LegacyESLint ||
       eslint.ESLint ||
@@ -45,15 +60,23 @@ export function getLegacyESLint(): typeof eslint.ESLint {
 
 /** Create compat ESLint class from legacy ESLint class */
 function getESLintClassFromLegacyESLint(
-  legacyESLintClass: typeof eslint.ESLint,
-): typeof eslint.ESLint {
+  legacyESLintClass: LegacyESLint,
+): ESLintType {
   return class ESLintFromLegacyESLint extends legacyESLintClass {
+    public static configType = "flat" as any;
+
+    public static readonly defaultConfig: [];
+
     public static get version() {
       return legacyESLintClass.version;
     }
 
     public constructor(options: any) {
       super(adjustOptions(options));
+    }
+
+    public findConfigFile(): Promise<string | undefined> {
+      throw new Error("unimplemented");
     }
   };
 
@@ -119,7 +142,7 @@ function getESLintClassFromLegacyESLint(
 }
 
 /** Create Legacy ESLint class from CLIEngine  */
-function getLegacyESLintClassFromCLIEngine(): typeof eslint.ESLint {
+function getLegacyESLintClassFromCLIEngine(): LegacyESLint {
   // eslint-disable-next-line @typescript-eslint/naming-convention -- class name
   const CLIEngine = (eslint as any).CLIEngine;
   class LegacyESLintFromCLIEngine {
@@ -202,8 +225,8 @@ function getLegacyESLintClassFromCLIEngine(): typeof eslint.ESLint {
 
     // eslint-disable-next-line @typescript-eslint/require-await -- ignore
     public static async outputFixes(
-      ...params: Parameters<(typeof eslint.ESLint)["outputFixes"]>
-    ): ReturnType<(typeof eslint.ESLint)["outputFixes"]> {
+      ...params: Parameters<ESLintType["outputFixes"]>
+    ): ReturnType<ESLintType["outputFixes"]> {
       return CLIEngine.outputFixes({
         results: params[0],
       } as any);
