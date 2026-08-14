@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
   issues: write
   pull-requests: write
 
@@ -21,17 +22,20 @@ jobs:
           # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
           fetch-depth: 0
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
+        with:
+          node-version: "lts/*"
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
       - name: Install Dependencies
         run: npm i -f
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v2.1.0
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
-          publish: npm run release
-          commit: "chore: release eslint-compat-utils"
-          title: "chore: release eslint-compat-utils"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          publish-script: npm run release
+          commit-message: "chore: release eslint-compat-utils"
+          pr-title: "chore: release eslint-compat-utils"
+          push-with-git-cli: true

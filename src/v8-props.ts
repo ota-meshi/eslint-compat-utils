@@ -32,12 +32,7 @@ interface BaseConfig {
   globals?:
     | {
         [name: string]:
-          | boolean
-          | "off"
-          | "readonly"
-          | "readable"
-          | "writable"
-          | "writeable";
+          boolean | "off" | "readonly" | "readable" | "writable" | "writeable";
       }
     | undefined;
   noInlineConfig?: boolean | undefined;

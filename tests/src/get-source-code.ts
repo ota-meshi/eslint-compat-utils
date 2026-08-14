@@ -26,7 +26,7 @@ describe("getSourceCode", () => {
               },
             },
           },
-        } as any,
+        },
         rules: {
           "test/test-rule": "error",
         },
@@ -100,7 +100,7 @@ describe("getSourceCode", () => {
               },
             },
           },
-        } as any,
+        },
         rules: {
           "test/test": "error",
           "no-unused-vars": "error",

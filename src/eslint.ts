@@ -35,9 +35,7 @@ export function getESLint(): ESLintType {
     return (
       getUnsupported().FlatESLint ||
       (eslint.ESLint
-        ? getESLintClassFromLegacyESLint(
-            eslint.ESLint as unknown as LegacyESLint,
-          )
+        ? getESLintClassFromLegacyESLint(eslint.ESLint)
         : getESLintClassFromLegacyESLint(getLegacyESLintClassFromCLIEngine()))
     );
   }
@@ -63,7 +61,7 @@ function getESLintClassFromLegacyESLint(
   legacyESLintClass: LegacyESLint,
 ): ESLintType {
   return class ESLintFromLegacyESLint extends legacyESLintClass {
-    public static configType = "flat" as any;
+    public static configType = "flat";
 
     public static readonly defaultConfig: [];
 
