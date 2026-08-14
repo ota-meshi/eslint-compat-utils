@@ -1,3 +1,4 @@
+// eslint-disable-next-line n/no-unsupported-features/node-builtins -- support Node.js 12
 import { createRequire } from "module";
 
 /** Load module */
