@@ -23,7 +23,7 @@ describe("getESLint", () => {
                 },
               },
             },
-          } as any,
+          },
           rules: {
             "test/test": "error",
             "no-undef": "error",
@@ -69,7 +69,7 @@ describe("getESLint", () => {
                   },
                 },
               },
-            } as any,
+            },
             rules: {
               "test/test": "error",
               "no-undef": "error",
